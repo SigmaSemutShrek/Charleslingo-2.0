@@ -1,7 +1,7 @@
 let questions = [];
 let currentQuestionIndex = 0;
 let currentAnswer = null;
-let score = 0; 
+let score = 0;
 
 function getLevelOfDifficulty() {
     const validLevels = ['easy', 'medium', 'hard', 'sheldon'];
@@ -55,8 +55,8 @@ function getRange(level) {
     }
 }
 
-function formatNumber(num, decimalPlaces = 2) {
-    return num.toFixed(decimalPlaces);
+function formatNumber(num) {
+    return Number(num).toFixed(2);
 }
 
 function generateQuestion(level, operation) {
@@ -65,7 +65,7 @@ function generateQuestion(level, operation) {
     const b = Math.floor(Math.random() * (range.max - range.min + 1)) + range.min;
     let question = questionTemplates[level][operation](a, b);
     let answer;
-    
+
     switch (operation) {
         case 'add':
             answer = a + b;
@@ -77,18 +77,37 @@ function generateQuestion(level, operation) {
             answer = a * b;
             break;
         case 'division':
-            answer = b !== 0 ? a / b : a;
+            answer = b !== 0 ? a / b : a; // Division by zero handled
             break;
     }
 
-    return { question, answer: formatNumber(answer) };
+    return { question, answer: answer % 1 === 0 ? answer.toString() : formatNumber(answer) };
+}
+
+function generateWrongAnswers(correctAnswer, count) {
+    const range = getRange(getLevelOfDifficulty()[0]);
+    const isDecimal = correctAnswer.includes('.');
+    const answers = [correctAnswer];
+
+    while (answers.length < count) {
+        let wrongAnswer;
+        do {
+            wrongAnswer = isDecimal
+                ? formatNumber(Math.random() * (range.max * 2))
+                : (Math.floor(Math.random() * (range.max * 2))).toString();
+        } while (answers.includes(wrongAnswer) || wrongAnswer === correctAnswer);
+        answers.push(wrongAnswer);
+    }
+
+    // Ensure all answers have the same format as the correct answer
+    return answers.map(ans => isDecimal ? formatNumber(parseFloat(ans)) : parseFloat(ans).toString());
 }
 
 function generateQuestions(levels, operations, totalQuestions) {
     const questions = [];
     const totalCombinations = levels.length * operations.length;
     const maxQuestionsPerCombination = Math.ceil(totalQuestions / totalCombinations);
-    
+
     levels.forEach(level => {
         operations.forEach(operation => {
             for (let i = 0; i < maxQuestionsPerCombination; i++) {
@@ -114,22 +133,17 @@ function displayQuestion(index) {
             document.getElementById('box3'),
             document.getElementById('box4')
         ];
-        const answers = [answer];
-        while (answers.length < answerBoxes.length) {
-            let wrongAnswer;
-            do {
-                wrongAnswer = formatNumber(Math.floor(Math.random() * (getRange(getLevelOfDifficulty()[0]).max * 2)), 2);
-            } while (answers.includes(wrongAnswer));
-            answers.push(wrongAnswer);
-        }
-        answers.sort(() => Math.random() - 0.5);
+
+        const formattedAnswers = generateWrongAnswers(answer, answerBoxes.length - 1);
+        formattedAnswers.push(answer);
+        formattedAnswers.sort(() => Math.random() - 0.5);
 
         answerBoxes.forEach((box, i) => {
-            box.innerHTML = answers[i];
-            box.setAttribute('data-answer', answers[i]);
+            box.innerHTML = formattedAnswers[i];
+            box.setAttribute('data-answer', formattedAnswers[i]);
         });
     } else {
-        questiondocument.querySelector('.question').innerHTML = 'No more questions.';
+        document.querySelector('.question').innerHTML = 'No more questions.';
     }
 }
 
@@ -140,11 +154,11 @@ function setupEventListeners() {
         document.getElementById('box3'),
         document.getElementById('box4')
     ];
-    
+
     answerBoxes.forEach(box => {
         box.addEventListener('click', function() {
-            const selectedAnswer = parseFloat(box.getAttribute('data-answer'));
-            if (selectedAnswer === parseFloat(currentAnswer)) {
+            const selectedAnswer = box.getAttribute('data-answer');
+            if (selectedAnswer === currentAnswer) {
                 score++;
                 console.log('Correct answer! Score:', score);
             } else {
@@ -184,7 +198,7 @@ function initializeGame(levels, operations) {
 function startGame() {
     const levels = getLevelOfDifficulty();
     const operations = getOperations();
-    
+
     if (levels.length === 0 || operations.length === 0) {
         console.log('No valid mode or operation selected. Redirecting to the main choosing page.');
         window.location.href = 'selection.html';
