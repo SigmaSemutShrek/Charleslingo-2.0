@@ -59,11 +59,18 @@ header{
     }
 }
 
+.psMessage{
+	position: absolute;
+	left: 10px;
+	bottom: 20px;
+	display:flex
+}
+
 .question{
     color: black;
     position: absolute;
     left: 50%;
-    transform: translateX(-50%);
+    transform: translateX(-70%);
     padding: 10px 32.5px;
     border-radius: 5px;
     border: 2px solid white;
@@ -71,6 +78,13 @@ header{
     font-weight: 500;
     background-color: lightgreen;
     width: max-content;
+}
+
+.spanTag{
+	font-size: 30px;
+	position: absolute;
+	right: 0;
+	margin-right: 100px;
 }
 
 .answerHolder{
@@ -117,7 +131,7 @@ header{
     & .box3{
         position: absolute;
         left: 0;
-        margin-bottom: 2.5%;
+        margin-bottom: 4%;
         bottom: 0;
         margin-left: 5%;
     }
@@ -125,7 +139,7 @@ header{
     & .box4{
         position: absolute;
         right: 0;
-        margin-bottom: 2.5%;
+        margin-bottom: 4%;
         bottom: 0;
         margin-right: 5%;
     }
