@@ -77,7 +77,7 @@ function generateQuestion(level, operation) {
             answer = a * b;
             break;
         case 'division':
-            answer = b !== 0 ? a / b : a; // Division by zero handled
+            answer = b !== 0 ? a / b : a;
             break;
     }
 
@@ -85,26 +85,23 @@ function generateQuestion(level, operation) {
 }
 
 function generateWrongAnswers(correctAnswer, count) {
-    const range = getRange(getLevelOfDifficulty()[0]);
+    const min = 1;
+    const max = 10;
     const isDecimal = correctAnswer.includes('.');
-    const answers = new Set([correctAnswer]); // Use a Set to ensure uniqueness
+    const answers = new Set();
 
     while (answers.size < count) {
         let wrongAnswer;
         do {
             wrongAnswer = isDecimal
-                ? formatNumber(Math.random() * (range.max * 2))
-                : (Math.floor(Math.random() * (range.max * 2))).toString();
+                ? formatNumber(Math.random() * (max - min) + min)
+                : (Math.floor(Math.random() * (max - min + 1)) + min).toString();
         } while (answers.has(wrongAnswer) || wrongAnswer === correctAnswer);
+
         answers.add(wrongAnswer);
     }
 
-    // Convert the Set to an array and ensure correct formatting
-    return Array.from(answers).map(ans => isDecimal ? formatNumber(parseFloat(ans)) : parseFloat(ans).toString());
-}
-
-    // Ensure all answers have the same format as the correct answer
-    return answers.map(ans => isDecimal ? formatNumber(parseFloat(ans)) : parseFloat(ans).toString());
+    return Array.from(answers);
 }
 
 function generateQuestions(levels, operations, totalQuestions) {
@@ -137,9 +134,10 @@ function displayQuestion(index) {
             document.getElementById('box3'),
             document.getElementById('box4')
         ];
+	
+        const wrongAnswers = generateWrongAnswers(answer, answerBoxes.length - 1);
+        const formattedAnswers = [...wrongAnswers, answer];
 
-        const formattedAnswers = generateWrongAnswers(answer, answerBoxes.length - 1);
-        formattedAnswers.push(answer);
         formattedAnswers.sort(() => Math.random() - 0.5);
 
         answerBoxes.forEach((box, i) => {
