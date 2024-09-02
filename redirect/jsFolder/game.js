@@ -43,13 +43,13 @@ const questionTemplates = {
 function getRange(level) {
     switch(level) {
         case 'easy':
-            return { min: 1, max: 100 };
+            return { min: 1, max: 10 };
         case 'medium':
-            return { min: 1, max: 1000 };
+            return { min: 1, max: 100 };
         case 'hard':
-            return { min: 1, max: 100000 };
+            return { min: 1, max: 1000 };
         case 'sheldon':
-            return { min: 1, max: 100000000 };
+            return { min: 1, max: 100000 };
         default:
             return { min: 1, max: 10 };
     }
