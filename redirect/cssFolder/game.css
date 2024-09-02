@@ -62,8 +62,9 @@ header{
 .psMessage{
 	position: absolute;
 	left: 10px;
-	bottom: 20px;
-	display:flex
+	bottom: 10px;
+    width: 100vw;
+    text-align: center;
 }
 
 .question{
@@ -143,4 +144,12 @@ header{
         bottom: 0;
         margin-right: 5%;
     }
+}
+
+.againBtn{
+    padding: 20px 100px;
+    background-color: white;
+    border-radius: 20px;
+    border: 2px solid black;
+    color: black;
 }
