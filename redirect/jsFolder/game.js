@@ -49,7 +49,7 @@ function getRange(level) {
         case 'hard':
             return { min: 1, max: 100000 };
         case 'sheldon':
-            return { min: 1, max: 1000000 };
+            return { min: 1, max: 100000000 };
         default:
             return { min: 1, max: 10 };
     }
@@ -77,25 +77,29 @@ function generateQuestion(level, operation) {
             answer = a * b;
             break;
         case 'division':
-            answer = b !== 0 ? a / b : a;
+            answer = b !== 0 ? a / b : a; // handle division by zero
             break;
     }
 
-    return { question, answer: answer % 1 === 0 ? answer.toString() : formatNumber(answer) };
+    return { question, answer: answer % 1 === 0 ? answer.toString() : formatNumber(answer), operation };
 }
 
-function generateWrongAnswers(correctAnswer, count) {
-    const min = 1;
-    const max = 10;
+function generateWrongAnswers(correctAnswer, count, level) {
+    const range = getRange(level);
+    const min = Math.max(range.min, correctAnswer - 10);
+    const max = Math.min(range.max, correctAnswer + 10);
     const isDecimal = correctAnswer.includes('.');
     const answers = new Set();
+    const correct = parseFloat(correctAnswer);
 
     while (answers.size < count) {
         let wrongAnswer;
         do {
             wrongAnswer = isDecimal
                 ? formatNumber(Math.random() * (max - min) + min)
-                : (Math.floor(Math.random() * (max - min + 1)) + min).toString();
+                : Math.floor(Math.random() * (max - min + 1)) + min;
+
+            wrongAnswer = wrongAnswer.toString();
         } while (answers.has(wrongAnswer) || wrongAnswer === correctAnswer);
 
         answers.add(wrongAnswer);
@@ -103,6 +107,7 @@ function generateWrongAnswers(correctAnswer, count) {
 
     return Array.from(answers);
 }
+
 
 function generateQuestions(levels, operations, totalQuestions) {
     const questions = [];
@@ -124,9 +129,9 @@ function generateQuestions(levels, operations, totalQuestions) {
 
 function displayQuestion(index) {
     if (index >= 0 && index < questions.length) {
-        const { question, answer } = questions[index];
+        const { question, answer, operation } = questions[index];
         document.querySelector('.question').innerHTML = question;
-				document.querySelector('.spanTag').innerHTML = `Current Question: ${index}/20`
+        document.querySelector('.spanTag').innerHTML = `Current Question: ${index + 1}/20`; 
         currentAnswer = answer;
 
         const answerBoxes = [
@@ -135,8 +140,8 @@ function displayQuestion(index) {
             document.getElementById('box3'),
             document.getElementById('box4')
         ];
-	
-        const wrongAnswers = generateWrongAnswers(answer, answerBoxes.length - 1);
+        
+        const wrongAnswers = generateWrongAnswers(answer, answerBoxes.length - 1, getLevelOfDifficulty()[0]);
         const formattedAnswers = [...wrongAnswers, answer];
 
         formattedAnswers.sort(() => Math.random() - 0.5);
@@ -187,7 +192,7 @@ function setupEventListeners() {
                 parent.style.justifyContent = 'center';
                 parent.style.height = '100vh';  
                 parent.style.paddingBottom = '150px';
-				question.style.transform = 'translateX(-50%)';
+                question.style.transform = 'translateX(-50%)';
             }
         });
     });
