@@ -87,17 +87,21 @@ function generateQuestion(level, operation) {
 function generateWrongAnswers(correctAnswer, count) {
     const range = getRange(getLevelOfDifficulty()[0]);
     const isDecimal = correctAnswer.includes('.');
-    const answers = [correctAnswer];
+    const answers = new Set([correctAnswer]); // Use a Set to ensure uniqueness
 
-    while (answers.length < count) {
+    while (answers.size < count) {
         let wrongAnswer;
         do {
             wrongAnswer = isDecimal
                 ? formatNumber(Math.random() * (range.max * 2))
                 : (Math.floor(Math.random() * (range.max * 2))).toString();
-        } while (answers.includes(wrongAnswer) || wrongAnswer === correctAnswer);
-        answers.push(wrongAnswer);
+        } while (answers.has(wrongAnswer) || wrongAnswer === correctAnswer);
+        answers.add(wrongAnswer);
     }
+
+    // Convert the Set to an array and ensure correct formatting
+    return Array.from(answers).map(ans => isDecimal ? formatNumber(parseFloat(ans)) : parseFloat(ans).toString());
+}
 
     // Ensure all answers have the same format as the correct answer
     return answers.map(ans => isDecimal ? formatNumber(parseFloat(ans)) : parseFloat(ans).toString());
@@ -190,7 +194,7 @@ function setupEventListeners() {
 function initializeGame(levels, operations) {
     console.log('Game initialized with levels:', levels);
     console.log('Operations:', operations);
-    questions = generateQuestions(levels, operations, 10);
+    questions = generateQuestions(levels, operations, 20);
     displayQuestion(currentQuestionIndex);
     setupEventListeners();
 }
