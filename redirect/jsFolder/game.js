@@ -126,6 +126,7 @@ function displayQuestion(index) {
     if (index >= 0 && index < questions.length) {
         const { question, answer } = questions[index];
         document.querySelector('.question').innerHTML = question;
+				document.querySelector('.spanTag').innerHTML = `Current Question: ${index}/20`
         currentAnswer = answer;
 
         const answerBoxes = [
@@ -172,7 +173,9 @@ function setupEventListeners() {
                 displayQuestion(currentQuestionIndex);
             } else {
                 answerBoxes.forEach(b => b.disabled = true);
-                document.querySelector('.question').innerHTML = `Game over! Your score: ${score}`;
+                document.querySelector('.question').innerHTML = `Game over! Your score: ${score}/20`;
+                const spanTag = document.querySelector('.spanTag');
+                spanTag.style.display = 'none';
                 console.log('No more questions. Final Score:', score);
                 answerBoxes.forEach(box => {
                     box.style.display = 'none';
@@ -184,6 +187,7 @@ function setupEventListeners() {
                 parent.style.justifyContent = 'center';
                 parent.style.height = '100vh';  
                 parent.style.paddingBottom = '150px';
+				question.style.transform = 'translateX(-50%)';
             }
         });
     });
