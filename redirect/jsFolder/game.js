@@ -108,7 +108,6 @@ function generateWrongAnswers(correctAnswer, count, level) {
     return Array.from(answers);
 }
 
-
 function generateQuestions(levels, operations, totalQuestions) {
     const questions = [];
     const totalCombinations = levels.length * operations.length;
@@ -178,20 +177,23 @@ function setupEventListeners() {
                 displayQuestion(currentQuestionIndex);
             } else {
                 answerBoxes.forEach(b => b.disabled = true);
+                
+                // Update question element to show final score
                 document.querySelector('.question').innerHTML = `Game over! Your score: ${score}/20`;
-                const spanTag = document.querySelector('.spanTag');
-                spanTag.style.display = 'none';
-                console.log('No more questions. Final Score:', score);
-                answerBoxes.forEach(box => {
-                    box.style.display = 'none';
-                });
+
+                // Hide other elements and show the "Play Again" button
+                document.querySelector('.spanTag').style.display = 'none';
+                document.querySelector('.answerHolder').style.display = 'none';
+                
                 const question = document.querySelector('.question');
                 const parent = document.querySelector('.parentQues');
+                const againBtn = document.querySelector('.againBtn');
+                againBtn.style.display = 'block';
                 parent.style.display = 'flex';
                 parent.style.alignItems = 'center';
                 parent.style.justifyContent = 'center';
                 parent.style.height = '100vh';  
-                parent.style.paddingBottom = '150px';
+                parent.style.paddingBottom = '350px';
                 question.style.transform = 'translateX(-50%)';
             }
         });
